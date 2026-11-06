@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generator Layanan Paket Informasi Terseleksi</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header Bar Aplikasi -->
+  <header class="app-header no-print">
+    <div class="header-brand">
+      <div class="brand-logo">📚</div>
+      <div>
+        <h1 class="brand-title">SIPIT - Generator Paket Informasi Terseleksi</h1>
+        <p class="brand-subtitle">Pusat Layanan Diseminasi & Kemas Ulang Informasi Perpustakaan</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="btn-load-sample" class="btn btn-secondary" title="Muat contoh data dari template Perpusnas">
+        ⚡ Muat Contoh Data
+      </button>
+      <button id="btn-reset" class="btn btn-outline" title="Kosongkan formulir">
+        🔄 Reset
+      </button>
+      <button id="btn-export-json" class="btn btn-secondary" title="Simpan berkas konfigurasi draft (JSON)">
+        💾 Simpan Proyek
+      </button>
+      <label class="btn btn-secondary file-label" title="Buka proyek dari berkas JSON">
+        📂 Buka Proyek
+        <input type="file" id="input-import-json" accept=".json" style="display: none;">
+      </label>
+      <button id="btn-print-pdf" class="btn btn-primary" title="Cetak atau Unduh Dokumen sebagai PDF">
+        🖨️ Cetak / Unduh PDF
+      </button>
+    </div>
+  </header>
+
+  <!-- Container Utama -->
+  <main class="app-main">
+    <!-- Panel Kiri: Form Editor -->
+    <section class="editor-pane no-print">
+      <div class="tabs-nav">
+        <button class="tab-btn active" data-tab="tab-umum">1. Informasi Umum</button>
+        <button class="tab-btn" data-tab="tab-keywords">2. Kata Kunci & Batasan</button>
+        <button class="tab-btn" data-tab="tab-jurnal">3. Artikel Jurnal (<span id="badge-count-jurnal">0</span>)</button>
+        <button class="tab-btn" data-tab="tab-buku">4. Koleksi Buku (<span id="badge-count-buku">0</span>)</button>
+        <button class="tab-btn" data-tab="tab-penutup">5. Penutup & Kontak</button>
+      </div>
+
+      <div class="tabs-content">
+        <!-- Tab 1: Info Umum -->
+        <div class="tab-panel active" id="tab-umum">
+          <div class="form-section-title">Identitas Instansi & Layanan</div>
+          <div class="form-group">
+            <label for="input-instansi">Nama Unit Layanan / Instansi:</label>
+            <input type="text" id="input-instansi" placeholder="Misal: Kelompok Layanan Kemas Ulang dan Diseminasi Informasi...">
+          </div>
+          <div class="form-group">
+            <label for="input-induk">Instansi Induk:</label>
+            <input type="text" id="input-induk" placeholder="Misal: Perpustakaan Nasional RI">
+          </div>
+
+          <div class="form-section-title">Profil Penerima & Edisi</div>
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="input-subjek">Subjek / Topik:</label>
+              <input type="text" id="input-subjek" placeholder="Misal: Pendidikan, Teknologi, Kedokteran...">
+            </div>
+            <div class="form-group col-6">
+              <label for="input-edisi">Edisi / Periode:</label>
+              <input type="text" id="input-edisi" placeholder="Misal: Agustus 2026">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="input-penerima-nama">Nama Pemustaka / Penerima:</label>
+              <input type="text" id="input-penerima-nama" placeholder="Misal: Riana Mardina">
+            </div>
+            <div class="form-group col-6">
+              <label for="input-penerima-email">Email Penerima (Opsional):</label>
+              <input type="email" id="input-penerima-email" placeholder="Misal: pemustaka@email.com">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="input-sapaan">Teks Pengantar Sapaan:</label>
+            <textarea id="input-sapaan" rows="3" placeholder="Teks sapaan awal kepada pemustaka..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="input-catatan-evaluasi">Catatan Evaluasi / Ketentuan Layanan (3 Bulan):</label>
+            <textarea id="input-catatan-evaluasi" rows="3" placeholder="Kebijakan review penerima layanan..."></textarea>
+          </div>
+        </div>
+
+        <!-- Tab 2: Kata Kunci -->
+        <div class="tab-panel" id="tab-keywords">
+          <div class="form-section-title">Batasan Penelusuran & Kata Kunci</div>
+          <p class="form-help">Tuliskan ruang lingkup, kata kunci spesifik, dan batasan penelusuran informasi bulan ini.</p>
+          <div class="form-group">
+            <label for="input-batasan">Deskripsi Batasan Penelusuran:</label>
+            <textarea id="input-batasan" rows="6" placeholder="Batasan pada penelusuran untuk diseminasi informasi terseleksi bulan ini adalah: (1)... (2)... (3)..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="input-sumber">Sumber Penelusuran:</label>
+            <input type="text" id="input-sumber" placeholder="Misal: e-Resources Perpusnas, Scopus, Google Scholar, Garuda...">
+          </div>
+        </div>
+
+        <!-- Tab 3: Artikel Jurnal -->
+        <div class="tab-panel" id="tab-jurnal">
+          <div class="panel-header-action">
+            <div>
+              <div class="form-section-title" style="margin-bottom: 2px;">Daftar Artikel Jurnal</div>
+              <p class="form-help">Tambahkan bahan bacaan artikel jurnal yang telah diseleksi.</p>
+            </div>
+            <button id="btn-add-jurnal" class="btn btn-primary btn-sm">+ Tambah Artikel</button>
+          </div>
+
+          <!-- Quick Autofill Helper -->
+          <div class="quick-lookup-card">
+            <div class="lookup-title">🔍 Quick Import via DOI (Crossref)</div>
+            <div class="lookup-input-group">
+              <input type="text" id="input-doi-lookup" placeholder="Masukkan DOI, misal: 10.1016/j.lisr.2024.101234">
+              <button id="btn-lookup-doi" class="btn btn-secondary btn-sm">Ambil Data</button>
+            </div>
+            <span id="doi-lookup-status" class="lookup-status"></span>
+          </div>
+
+          <div id="jurnal-items-container" class="items-list">
+            <!-- Item-item artikel akan digenerate di sini oleh JS -->
+          </div>
+        </div>
+
+        <!-- Tab 4: Koleksi Buku -->
+        <div class="tab-panel" id="tab-buku">
+          <div class="panel-header-action">
+            <div>
+              <div class="form-section-title" style="margin-bottom: 2px;">Daftar Koleksi Buku</div>
+              <p class="form-help">Tambahkan buku teks, monograf, e-book, atau referensi terpilih.</p>
+            </div>
+            <button id="btn-add-buku" class="btn btn-primary btn-sm">+ Tambah Buku</button>
+          </div>
+
+          <!-- Quick Autofill Helper -->
+          <div class="quick-lookup-card">
+            <div class="lookup-title">🔍 Quick Import via ISBN (OpenLibrary / Google Books)</div>
+            <div class="lookup-input-group">
+              <input type="text" id="input-isbn-lookup" placeholder="Masukkan ISBN, misal: 9781914386138">
+              <button id="btn-lookup-isbn" class="btn btn-secondary btn-sm">Ambil Data</button>
+            </div>
+            <span id="isbn-lookup-status" class="lookup-status"></span>
+          </div>
+
+          <div id="buku-items-container" class="items-list">
+            <!-- Item-item buku akan digenerate di sini oleh JS -->
+          </div>
+        </div>
+
+        <!-- Tab 5: Penutup & Kontak -->
+        <div class="tab-panel" id="tab-penutup">
+          <div class="form-section-title">Formulir Tanggapan Pemustaka</div>
+          <div class="form-group">
+            <label for="input-tanggapan-teks">Teks Ajakan Tanggapan:</label>
+            <textarea id="input-tanggapan-teks" rows="2" placeholder="Berikan tanggapan sahabat agar kami bisa selalu memberi yang terbaik..."></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="input-tanggapan-label">Label Tombol Tanggapan:</label>
+              <input type="text" id="input-tanggapan-label" placeholder="Misal: Masukan Tanggapan">
+            </div>
+            <div class="form-group col-6">
+              <label for="input-tanggapan-url">URL Form Tanggapan (Google Form/Survey):</label>
+              <input type="url" id="input-tanggapan-url" placeholder="https://forms.gle/...">
+            </div>
+          </div>
+
+          <div class="form-section-title">Penutup & Identitas Pustakawan</div>
+          <div class="form-group">
+            <label for="input-penutup-teks">Teks Kalimat Penutup:</label>
+            <textarea id="input-penutup-teks" rows="2" placeholder="Demikian informasi terseleksi subjek..."></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-4">
+              <label for="input-salam-penutup">Salam:</label>
+              <input type="text" id="input-salam-penutup" placeholder="Salam Literasi">
+            </div>
+            <div class="form-group col-4">
+              <label for="input-pustakawan-nama">Nama Pustakawan:</label>
+              <input type="text" id="input-pustakawan-nama" placeholder="Misal: Salamun Ababil">
+            </div>
+            <div class="form-group col-4">
+              <label for="input-pustakawan-jabatan">Jabatan Fungsional:</label>
+              <input type="text" id="input-pustakawan-jabatan" placeholder="Pustakawan Ahli Pertama">
+            </div>
+          </div>
+
+          <div class="form-section-title">Layanan Tanya Pustakawan & Kontak</div>
+          <div class="form-group">
+            <label for="input-tanya-teks">Deskripsi Tanya Pustakawan:</label>
+            <textarea id="input-tanya-teks" rows="2" placeholder="Apabila Sahabat ingin bertanya atau meminta bantuan..."></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="input-tanya-url">URL Portal Tanya Pustakawan:</label>
+              <input type="url" id="input-tanya-url" placeholder="https://tanyapustakawan.perpusnas.go.id">
+            </div>
+            <div class="form-group col-6">
+              <label for="input-email-layanan">Email Resmi Layanan:</label>
+              <input type="email" id="input-email-layanan" placeholder="sahabat_perpusnas@mail.perpusnas.go.id">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="input-copyright">Teks Hak Cipta:</label>
+              <input type="text" id="input-copyright" placeholder="Hak Cipta © 2026 Perpustakaan Nasional RI">
+            </div>
+            <div class="form-group col-6">
+              <label for="input-unsub-url">URL Berhenti Langganan:</label>
+              <input type="text" id="input-unsub-url" placeholder="https://perpusnas.go.id/unsubscribe">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel Kanan: Live Preview & Export -->
+    <section class="preview-pane">
+      <div class="preview-toolbar no-print">
+        <div class="preview-toolbar-left">
+          <span class="preview-badge">Live Preview Hasil</span>
+          <span class="preview-info-text">Format Paket Informasi Diseminasi</span>
+        </div>
+        <div class="preview-toolbar-actions">
+          <button id="btn-copy-email-html" class="btn btn-secondary btn-sm" title="Salin format siap paste ke Email (Gmail, Outlook, dll)">
+            📋 Salin Template Email
+          </button>
+          <button id="btn-download-html" class="btn btn-secondary btn-sm" title="Unduh berkas .html mandiri">
+            📥 Unduh HTML
+          </button>
+          <button id="btn-toggle-view-mode" class="btn btn-outline btn-sm" title="Ubah tampilan">
+            📱 Mode Baca
+          </button>
+        </div>
+      </div>
+
+      <!-- Area Tampilan Dokumen Hasil -->
+      <div class="preview-viewport" id="preview-viewport">
+        <article class="document-container" id="rendered-document">
+          <!-- Dokumen akan dirender oleh template engine di app.js -->
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <!-- Notifikasi Toast -->
+  <div id="toast" class="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
